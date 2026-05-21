@@ -1,5 +1,9 @@
 # AI-Based-Job-Tracker
 
+## Description
+
+A full-stack AI-powered job application tracker that helps job seekers organize their search, discover opportunities, and maximize their chances of landing interviews.
+
 ## Feature list:
 
 List of jobs,
