@@ -6,14 +6,28 @@ A full-stack AI-powered job application tracker that helps job seekers organize 
 
 ## Feature list:
 
-List of jobs,
- Add/delete/update,
- potential jobs found by ai,
- rag system,
- authentication,
- usage of task tracker api,
- custom api usage
- Jsearch API for job postings
- Salary Intelligence dashboard
- AI Job-matched resume scoring
+### Core features
 
+Job list with status tracking (Applied, Interviewing, Offer, Rejected)
+
+Add, edit, and delete job applications
+
+User authentication and session management
+
+### AI features
+
+AI job discovery — Suggests relevant openings based on your profile
+
+RAG system — Context-aware Q&A over your resume and job history
+
+Resume similarity scoring — AI rates your resume fit against any job description
+
+### Data & insights
+
+Salary intelligence dashboard — Visualize pay ranges by role and location
+
+### Integrations
+
+Task tracker API — Sync follow-ups and interview reminders
+
+Custom API layer — Extensible endpoints for additional integrations
