@@ -137,3 +137,23 @@ def login_for_access_token(
     access_token = create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
+@app.post("/jobs", response_model=JobRead)
+def create_job(
+    job: JobCreate,
+    session: SessionDep,
+    current_user: User = Depends(get_current_user),
+):
+    cleaned_data = job.model_dump()
+    
+    # Normalize experience and status fields
+    if cleaned_data.get("experience"):
+        cleaned_data["experience"] = cleaned_data["experience"].strip().title()
+    
+    if cleaned_data.get("status"):
+        cleaned_data["status"] = cleaned_data["status"].strip().title()
+
+    db_job = Job(**cleaned_data, owner_id=current_user.id)
+    session.add(db_job)
+    session.commit()
+    session.refresh(db_job)
+    return db_job
