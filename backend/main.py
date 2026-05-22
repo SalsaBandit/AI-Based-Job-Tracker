@@ -145,12 +145,18 @@ def create_job(
 ):
     cleaned_data = job.model_dump()
     
-    # Normalize experience and status fields
+    # Normalize fields
     if cleaned_data.get("experience"):
         cleaned_data["experience"] = cleaned_data["experience"].strip().title()
     
     if cleaned_data.get("status"):
         cleaned_data["status"] = cleaned_data["status"].strip().title()
+    
+    if cleaned_data.get("location"):
+        cleaned_data["location"] = cleaned_data["location"].strip().title()
+    
+    if cleaned_data.get("company"):
+        cleaned_data["company"] = cleaned_data["company"].strip().title()
 
     db_job = Job(**cleaned_data, owner_id=current_user.id)
     session.add(db_job)
