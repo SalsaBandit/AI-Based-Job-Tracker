@@ -163,3 +163,78 @@ def create_job(
     session.commit()
     session.refresh(db_job)
     return db_job
+
+
+@app.get("/jobs", response_model =  list[JobRead])
+def read_jobs(
+    session: SessionDep,
+    current_user: User = Depends(get_current_user),
+    status: str | None = None,
+    location: str | None = None,
+):
+    statement = select(Job).where(Job.owner_id == current_user.id)
+
+    return session.exec(statement).all()
+
+
+@app.get("/jobs/{job_id}", response_model = JobRead)
+def get_job(
+    job_id: int,
+    session: SessionDep,
+    current_user: User = Depends(get_current_user),
+):
+    statement = select(Job).where(Job.id == job_id, Job.owner_id == current_user.id)
+
+    dbjob = session.exec(statement).first()
+
+
+    if dbjob:
+        return dbjob
+    
+    else:
+        raise HTTPException(status_code=404, detail="Job ID not found")
+    
+
+@app.patch("/jobs/{job_id}", response_model = JobRead)
+def update_job(
+    job_id: int,
+    job: JobUpdate,
+    session: SessionDep,
+    current_user: User = Depends(get_current_user),
+):
+    statement = select(Job).where(Job.id == job_id, Job.owner_id == current_user.id)
+
+    dbjob = session.exec(statement).first()
+
+
+    if dbjob:
+
+        dbjob.sqlmodel_update(job.model_dump(exclude_unset=True))
+        session.commit()
+        session.refresh(dbjob)
+        return dbjob
+    
+    else:
+        raise HTTPException(status_code=404, detail="Job ID not found")
+
+
+@app.delete("/jobs/{job_id}", response_model = JobRead)
+def delete_job(
+    job_id: int,
+    session: SessionDep,
+    current_user: User = Depends(get_current_user),
+):
+    statement = select(Job).where(Job.id == job_id, Job.owner_id == current_user.id)
+
+    dbjob = session.exec(statement).first()
+
+    if dbjob:
+
+        session.delete(dbjob)
+        session.commit()
+
+        return dbjob
+    
+    else:
+
+        raise HTTPException(status_code=404, detail="Job ID not found")
