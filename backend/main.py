@@ -1,13 +1,13 @@
 import os
 from datetime import datetime, timedelta, timezone
-from typing import Annotated
+from typing import Annotated, Dict
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from sqlalchemy import distinct, func
+from sqlalchemy import distinct
 from sqlmodel import SQLModel, Session, select
 
 from database import engine, get_session
@@ -174,6 +174,15 @@ def read_jobs(
 ):
     statement = select(Job).where(Job.owner_id == current_user.id)
 
+    if status:
+        statement = statement.where(Job.status == status)
+    
+    if location:
+        statement = statement.where(Job.location == location)
+    
+    if status and location:
+        statement = statement.where(Job.status == status, Job.location == location)
+
     return session.exec(statement).all()
 
 
@@ -206,10 +215,16 @@ def update_job(
 
     dbjob = session.exec(statement).first()
 
+    update_data = job.model_dump(exclude_unset=True)
+
+    if "status" in update_data and update_data["status"]:
+        update_data["status"] = update_data["status"].strip().title()
+
+    if "location" in update_data and update_data["location"]:
+        update_data["location"] = update_data["location"].strip().title()
 
     if dbjob:
-
-        dbjob.sqlmodel_update(job.model_dump(exclude_unset=True))
+        dbjob.sqlmodel_update(update_data)
         session.commit()
         session.refresh(dbjob)
         return dbjob
@@ -233,8 +248,30 @@ def delete_job(
         session.delete(dbjob)
         session.commit()
 
-        return dbjob
+        return {"message": "Job deleted successfully"}
     
     else:
 
         raise HTTPException(status_code=404, detail="Job ID not found")
+
+
+
+@app.get("/filters", response_model=Dict[str, list[str]])
+def get_job_filters(session: SessionDep, current_user: User = Depends(get_current_user)):
+    statement = select(Job.location, Job.status).where(Job.owner_id == current_user.id)
+    results = session.exec(statement).all()
+    
+    unique_locations = set()
+    unique_statuses = set()
+    
+    for location, status in results:
+        if location and location.strip():
+            unique_locations.add(location.strip().title())
+
+        if status and status.strip():
+            unique_statuses.add(status.strip().title())
+            
+    return {
+        "locations": sorted(list(unique_locations)),
+        "statuses": sorted(list(unique_statuses))
+    }
