@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobLens — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body class="dashboard">
+
+  <!-- ── Navbar  -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <div class="nav-logo">🔭</div>
+      <span class="nav-title">JobLens</span>
+    </div>
+    <div class="nav-right">
+      <span class="nav-count" id="job-count">0 applications</span>
+      <button class="btn btn-ghost" id="logout-btn" style="font-size:.82rem;padding:.45rem .9rem">
+        Sign out
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── Main content -->
+  <main class="page-content">
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-filters">
+        <select class="filter-select" id="filter-status" aria-label="Filter by status">
+          <option value="">All Statuses</option>
+        </select>
+        <select class="filter-select" id="filter-location" aria-label="Filter by location">
+          <option value="">All Locations</option>
+        </select>
+        <button class="btn btn-ghost clear-btn" id="clear-filters">Clear</button>
+      </div>
+      <button class="btn btn-primary" id="add-job-btn">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Add application
+      </button>
+    </div>
+
+    <!-- Job grid -->
+    <div class="job-grid" id="job-grid">
+      <div class="loading-row"><span class="spinner"></span> Loading jobs…</div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" id="empty-state" hidden>
+      <div class="empty-icon">📋</div>
+      <h3>No applications yet</h3>
+      <p>Add your first job application to get started tracking.</p>
+    </div>
+
+  </main>
+
+  <!-- ── Job modal -->
+  <div class="modal-backdrop" id="job-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="modal-title">Add Application</h2>
+        <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="job-form" novalidate autocomplete="off">
+          <div class="form-grid">
+
+            <div class="form-group full">
+              <label for="f-title">Job Title <span style="color:var(--danger)">*</span></label>
+              <input id="f-title" name="title" type="text"
+                     placeholder="e.g. Senior Software Engineer" required />
+            </div>
+
+            <div class="form-group">
+              <label for="f-company">Company <span style="color:var(--danger)">*</span></label>
+              <input id="f-company" name="company" type="text"
+                     placeholder="e.g. Acme Corp" required />
+            </div>
+
+            <div class="form-group">
+              <label for="f-location">Location</label>
+              <input id="f-location" name="location" type="text"
+                     placeholder="e.g. Remote, New York" />
+            </div>
+
+            <div class="form-group">
+              <label for="f-status">Status</label>
+              <select id="f-status" name="status">
+                <option value="">Select status…</option>
+                <option value="Applied">Applied</option>
+                <option value="Screening">Screening</option>
+                <option value="Interview">Interview</option>
+                <option value="Offer">Offer</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Withdrawn">Withdrawn</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="f-experience">Experience Level</label>
+              <select id="f-experience" name="experience">
+                <option value="">Select level…</option>
+                <option value="Internship">Internship</option>
+                <option value="Entry Level">Entry Level</option>
+                <option value="Mid Level">Mid Level</option>
+                <option value="Senior">Senior</option>
+                <option value="Lead">Lead</option>
+                <option value="Manager">Manager</option>
+                <option value="Director">Director</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="f-salary">Salary Range</label>
+              <input id="f-salary" name="salary" type="text"
+                     placeholder="e.g. $80k–$100k" />
+            </div>
+
+            <div class="form-group">
+              <label for="f-applied-date">Date Applied</label>
+              <input id="f-applied-date" name="applied_date" type="date" />
+            </div>
+
+            <div class="form-group full">
+              <label for="f-url">Job Posting URL</label>
+              <input id="f-url" name="url" type="url"
+                     placeholder="https://…" />
+            </div>
+
+            <div class="form-group full">
+              <label for="f-notes">Notes</label>
+              <textarea id="f-notes" name="notes"
+                        placeholder="Recruiter name, interview prep notes, next steps…"></textarea>
+            </div>
+
+          </div><!-- /form-grid -->
+
+          <p id="form-error" class="error-msg" role="alert" style="margin-top:.75rem"></p>
+
+          <div class="modal-footer">
+            <button type="button" id="delete-btn" class="btn btn-danger" hidden>Delete</button>
+            <div class="modal-footer-right">
+              <button type="button" class="btn btn-ghost" id="cancel-btn"
+                      onclick="document.getElementById('job-modal').classList.remove('open');document.body.classList.remove('modal-open')">
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Delete confirm modal -->
+  <div class="modal-backdrop" id="confirm-modal" role="dialog" aria-modal="true">
+    <div class="modal-box confirm-box">
+      <div class="confirm-icon">🗑️</div>
+      <h3>Delete application?</h3>
+      <p>This action can't be undone. The application will be permanently removed.</p>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost" id="confirm-no">Cancel</button>
+        <button class="btn btn-danger" id="confirm-yes">Yes, delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

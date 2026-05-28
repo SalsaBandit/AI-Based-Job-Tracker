@@ -1,0 +1,109 @@
+/*  Auth Page  */
+
+.auth-bg {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+  
+ 
+  .auth-bg::after {
+    content: '';
+    position: fixed;
+    width: 640px; height: 640px;
+    background: radial-gradient(circle, rgba(79,142,247,.07) 0%, transparent 70%);
+    top: -200px; right: -200px;
+    pointer-events: none;
+    border-radius: 50%;
+  }
+  
+  .auth-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    background: var(--bg-2);
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  
+  .auth-brand {
+    padding: 2rem 2rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+  }
+  
+  .brand-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px; height: 46px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-radius: 12px;
+    font-size: 1.3rem;
+    margin-bottom: .75rem;
+    box-shadow: 0 4px 18px rgba(79,142,247,.35);
+  }
+  
+  .auth-brand h1 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -.03em;
+    color: var(--text);
+  }
+  
+  .auth-brand p {
+    font-size: .82rem;
+    color: var(--text-2);
+    margin-top: .2rem;
+  }
+  
+  /*  Panes  */
+  .auth-pane {
+    display: none;
+    padding: 1.75rem 2rem 2rem;
+    flex-direction: column;
+    gap: 1.1rem;
+    animation: fadeUp .25s ease;
+  }
+  
+  .auth-pane.active { display: flex; }
+  
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  
+  .auth-pane h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  
+  .auth-submit {
+    width: 100%;
+    padding: .72rem;
+    font-size: .925rem;
+    font-weight: 600;
+    letter-spacing: .01em;
+    justify-content: center;
+    border-radius: var(--radius);
+  }
+  
+  .auth-switch {
+    text-align: center;
+    font-size: .82rem;
+    color: var(--text-2);
+    margin-top: .2rem;
+  }
+  
+  .auth-switch a {
+    color: var(--accent);
+    font-weight: 500;
+  }
